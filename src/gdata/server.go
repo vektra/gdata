@@ -2,39 +2,52 @@ package gdata
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/bmizerany/pat"
 	consul "github.com/hashicorp/consul/api"
+	"github.com/satori/go.uuid"
+	"github.com/vektra/jwt-go"
 )
 
 type Server struct {
+	cfg *Config
 	mux *pat.PatternServeMux
 	con *consul.Client
 }
 
-func NewServer() (*Server, error) {
+func NewServer(cfg *Config) (*Server, error) {
+	concfg := consul.DefaultConfig()
 
-	cfg := consul.DefaultConfig()
-
-	con, err := consul.NewClient(cfg)
+	con, err := consul.NewClient(concfg)
 	if err != nil {
 		return nil, err
 	}
 
+	if cfg.key == nil {
+		return nil, fmt.Errorf("Config needs to contain a key")
+	}
+
 	s := &Server{
+		cfg: cfg,
 		mux: pat.New(),
 		con: con,
 	}
 
-	s.mux.Post("/:org/:type/:id", http.HandlerFunc(s.set))
+	s.mux.Post("/create", http.HandlerFunc(s.create))
+	s.mux.Post("/token", s.extractOrg(http.HandlerFunc(s.newToken)))
 
-	s.mux.Get("/:org/:type/_search", http.HandlerFunc(s.search))
-	s.mux.Get("/:org/:type/:id", http.HandlerFunc(s.get))
+	s.mux.Post("/:type/:id", s.extractOrg(http.HandlerFunc(s.set)))
+	s.mux.Post("/:type", s.extractOrg(http.HandlerFunc(s.setGenId)))
+
+	s.mux.Get("/:type/_search", s.extractOrg(http.HandlerFunc(s.search)))
+	s.mux.Get("/:type/:id", s.extractOrg(http.HandlerFunc(s.get)))
 
 	return s, nil
 }
@@ -44,18 +57,90 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func (s *Server) key(org, typ, id string) string {
-	return fmt.Sprintf("%s-%s-%s", org, typ, id)
+	return fmt.Sprintf("%s/%s", s.keyType(org, typ), id)
 }
 
 func (s *Server) keyType(org, typ string) string {
-	return fmt.Sprintf("%s-%s", org, typ)
+	return fmt.Sprintf("data/%s/%s", org, typ)
+}
+
+func (s *Server) extractId(key string) string {
+	parts := strings.Split(key, "/")
+	return parts[3]
+}
+
+func (s *Server) extractOrg(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		token, err := jwt.ParseFromRequest(req,
+			func(*jwt.Token) (interface{}, error) { return &s.cfg.key.PublicKey, nil })
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		params := make(url.Values)
+
+		params.Add(":org", token.Claims["sub"].(string))
+
+		req.URL.RawQuery = params.Encode() + "&" + req.URL.RawQuery
+
+		h.ServeHTTP(w, req)
+	})
+}
+
+func randomId() string {
+	u := uuid.NewV4()
+	return strings.TrimRight(base64.URLEncoding.EncodeToString(u.Bytes()), "=")
+}
+
+func (s *Server) create(w http.ResponseWriter, req *http.Request) {
+	org := randomId()
+
+	token := jwt.New(jwt.SigningMethodES256)
+	token.Claims["sub"] = org
+
+	str, err := token.SignedString(s.cfg.key)
+	if err != nil {
+		http.Error(w, "error signing token", 500)
+		return
+	}
+
+	w.Write([]byte(str))
+}
+
+func (s *Server) newToken(w http.ResponseWriter, req *http.Request) {
+	var (
+		org = req.URL.Query().Get(":org")
+	)
+
+	token := jwt.New(jwt.SigningMethodES256)
+	token.Claims["sub"] = org
+
+	str, err := token.SignedString(s.cfg.key)
+	if err != nil {
+		http.Error(w, "error signing token", 500)
+		return
+	}
+
+	w.Write([]byte(str))
+}
+
+func (s *Server) setGenId(w http.ResponseWriter, req *http.Request) {
+	id := randomId()
+
+	s.setId(w, req, id)
 }
 
 func (s *Server) set(w http.ResponseWriter, req *http.Request) {
+	id := req.URL.Query().Get(":id")
+
+	s.setId(w, req, id)
+}
+
+func (s *Server) setId(w http.ResponseWriter, req *http.Request, id string) {
 	var (
 		org = req.URL.Query().Get(":org")
 		typ = req.URL.Query().Get(":type")
-		id  = req.URL.Query().Get(":id")
 	)
 
 	defer req.Body.Close()
@@ -153,11 +238,6 @@ func (q *Query) Match(kv *consul.KVPair) bool {
 	}
 
 	return str == q.value
-}
-
-func (s *Server) extractId(key string) string {
-	parts := strings.Split(key, "-")
-	return parts[2]
 }
 
 func (s *Server) search(w http.ResponseWriter, req *http.Request) {

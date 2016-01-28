@@ -45,6 +45,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/dgrijalva/jwt-go",
+			"repository": "https://github.com/dgrijalva/jwt-go",
+			"revision": "afef698c326bfd906b11659432544e5aae441d44",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/elazarl/go-bindata-assetfs",
 			"repository": "https://github.com/elazarl/go-bindata-assetfs",
 			"revision": "57eb5e1fc594ad4b0b1dbea7b286d299e0cb43c2",
@@ -213,6 +219,18 @@
 			"importpath": "github.com/ryanuber/columnize",
 			"repository": "https://github.com/ryanuber/columnize",
 			"revision": "983d3a5fab1bf04d1b412465d2d9f8430e2e917e",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/satori/go.uuid",
+			"repository": "https://github.com/satori/go.uuid",
+			"revision": "d41af8bb6a7704f00bc3b7cba9355ae6a5a80048",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/vektra/jwt-go",
+			"repository": "https://github.com/vektra/jwt-go",
+			"revision": "5bc4686aabfd6ac6bd1572082dd90305c8c71fc1",
 			"branch": "master"
 		},
 		{
