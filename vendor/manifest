@@ -1,0 +1,226 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/DataDog/datadog-go/statsd",
+			"repository": "https://github.com/DataDog/datadog-go",
+			"revision": "bc97e0770ad4edae1c9dc14beb40b79b2dde32f8",
+			"branch": "master",
+			"path": "/statsd"
+		},
+		{
+			"importpath": "github.com/armon/circbuf",
+			"repository": "https://github.com/armon/circbuf",
+			"revision": "bbbad097214e2918d8543d5201d12bfd7bca254d",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/armon/go-metrics",
+			"repository": "https://github.com/armon/go-metrics",
+			"revision": "345426c77237ece5dab0e1605c3e4b35c3f54757",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/armon/go-radix",
+			"repository": "https://github.com/armon/go-radix",
+			"revision": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/bgentry/speakeasy",
+			"repository": "https://github.com/bgentry/speakeasy",
+			"revision": "36e9cfdd690967f4f690c6edcc9ffacd006014a0",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/bmizerany/pat",
+			"repository": "https://github.com/bmizerany/pat",
+			"revision": "b8a35001b773c267eb260a691f4e5499a3531600",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/boltdb/bolt",
+			"repository": "https://github.com/boltdb/bolt",
+			"revision": "ee4a0888a9abe7eefe5a0992ca4cb06864839873",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/elazarl/go-bindata-assetfs",
+			"repository": "https://github.com/elazarl/go-bindata-assetfs",
+			"revision": "57eb5e1fc594ad4b0b1dbea7b286d299e0cb43c2",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/fsouza/go-dockerclient",
+			"repository": "https://github.com/fsouza/go-dockerclient",
+			"revision": "504b650c495df17b7f246b94fe2a2239a85bc73e",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/errwrap",
+			"repository": "https://github.com/hashicorp/errwrap",
+			"revision": "7554cd9344cec97297fa6649b055a8c98c2a1e55",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/go-checkpoint",
+			"repository": "https://github.com/hashicorp/go-checkpoint",
+			"revision": "e4b2dc34c0f698ee04750bf2035d8b9384233e1b",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/go-cleanhttp",
+			"repository": "https://github.com/hashicorp/go-cleanhttp",
+			"revision": "ce617e79981a8fff618bb643d155133a8f38db96",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/go-immutable-radix",
+			"repository": "https://github.com/hashicorp/go-immutable-radix",
+			"revision": "12e90058b2897552deea141eff51bb7a07a09e63",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/go-memdb",
+			"repository": "https://github.com/hashicorp/go-memdb",
+			"revision": "31949d523ade8a236956c6f1761e9dcf902d1638",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/go-msgpack/codec",
+			"repository": "https://github.com/hashicorp/go-msgpack",
+			"revision": "fa3f63826f7c23912c15263591e65d54d080b458",
+			"branch": "master",
+			"path": "/codec"
+		},
+		{
+			"importpath": "github.com/hashicorp/go-multierror",
+			"repository": "https://github.com/hashicorp/go-multierror",
+			"revision": "d30f09973e19c1dfcd120b2d9c4f168e68d6b5d5",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/go-reap",
+			"repository": "https://github.com/hashicorp/go-reap",
+			"revision": "2d85522212dcf5a84c6b357094f5c44710441912",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/go-syslog",
+			"repository": "https://github.com/hashicorp/go-syslog",
+			"revision": "42a2b573b664dbf281bd48c3cc12c086b17a39ba",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/golang-lru",
+			"repository": "https://github.com/hashicorp/golang-lru",
+			"revision": "5c7531c003d8bf158b0fe5063649a2f41a822146",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/hcl",
+			"repository": "https://github.com/hashicorp/hcl",
+			"revision": "578dd9746824a54637686b51a41bad457a56bcef",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/logutils",
+			"repository": "https://github.com/hashicorp/logutils",
+			"revision": "0dc08b1671f34c4250ce212759ebd880f743d883",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/memberlist",
+			"repository": "https://github.com/hashicorp/memberlist",
+			"revision": "9888dc523910e5d22c5be4f6e34520943df21809",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/net-rpc-msgpackrpc",
+			"repository": "https://github.com/hashicorp/net-rpc-msgpackrpc",
+			"revision": "a14192a58a694c123d8fe5481d4a4727d6ae82f3",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/raft",
+			"repository": "https://github.com/hashicorp/raft",
+			"revision": "057b893fd996696719e98b6c44649ea14968c811",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/raft-boltdb",
+			"repository": "https://github.com/hashicorp/raft-boltdb",
+			"revision": "d1e82c1ec3f15ee991f7cc7ffd5b67ff6f5bbaee",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/scada-client",
+			"repository": "https://github.com/hashicorp/scada-client",
+			"revision": "84989fd23ad4cc0e7ad44d6a871fd793eb9beb0a",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/serf/coordinate",
+			"repository": "https://github.com/hashicorp/serf",
+			"revision": "e4ec8cc423bbe20d26584b96efbeb9102e16d05f",
+			"branch": "master",
+			"path": "/coordinate"
+		},
+		{
+			"importpath": "github.com/hashicorp/serf/serf",
+			"repository": "https://github.com/hashicorp/serf",
+			"revision": "e4ec8cc423bbe20d26584b96efbeb9102e16d05f",
+			"branch": "master",
+			"path": "/serf"
+		},
+		{
+			"importpath": "github.com/hashicorp/yamux",
+			"repository": "https://github.com/hashicorp/yamux",
+			"revision": "df949784da9ed028ee76df44652e42d37a09d7e4",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/inconshreveable/muxado",
+			"repository": "https://github.com/inconshreveable/muxado",
+			"revision": "f693c7e88ba316d1a0ae3e205e22a01aa3ec2848",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mattn/go-isatty",
+			"repository": "https://github.com/mattn/go-isatty",
+			"revision": "56b76bdf51f7708750eac80fa38b952bb9f32639",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/miekg/dns",
+			"repository": "https://github.com/miekg/dns",
+			"revision": "4687536c727745d43759e8baae72cccf716f813a",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mitchellh/cli",
+			"repository": "https://github.com/mitchellh/cli",
+			"revision": "cb6853d606ea4a12a15ac83cc43503df99fd28fb",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mitchellh/mapstructure",
+			"repository": "https://github.com/mitchellh/mapstructure",
+			"revision": "281073eb9eb092240d33ef253c404f1cca550309",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/ryanuber/columnize",
+			"repository": "https://github.com/ryanuber/columnize",
+			"revision": "983d3a5fab1bf04d1b412465d2d9f8430e2e917e",
+			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/sys/unix",
+			"repository": "https://go.googlesource.com/sys",
+			"revision": "eb2c74142fd19a79b3f237334c7384d5167b1b46",
+			"branch": "master",
+			"path": "/unix"
+		}
+	]
+}
