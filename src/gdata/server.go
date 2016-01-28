@@ -43,11 +43,11 @@ func NewServer(cfg *Config) (*Server, error) {
 	s.mux.Post("/create", http.HandlerFunc(s.create))
 	s.mux.Post("/token", s.extractOrg(http.HandlerFunc(s.newToken)))
 
-	s.mux.Post("/:type/:id", s.extractOrg(http.HandlerFunc(s.set)))
-	s.mux.Post("/:type", s.extractOrg(http.HandlerFunc(s.setGenId)))
+	s.mux.Post("/dir/:type/:id", s.extractOrg(http.HandlerFunc(s.set)))
+	s.mux.Post("/dir/:type", s.extractOrg(http.HandlerFunc(s.setGenId)))
 
-	s.mux.Get("/:type/_search", s.extractOrg(http.HandlerFunc(s.search)))
-	s.mux.Get("/:type/:id", s.extractOrg(http.HandlerFunc(s.get)))
+	s.mux.Get("/dir/:type/_search", s.extractOrg(http.HandlerFunc(s.search)))
+	s.mux.Get("/dir/:type/:id", s.extractOrg(http.HandlerFunc(s.get)))
 
 	return s, nil
 }
