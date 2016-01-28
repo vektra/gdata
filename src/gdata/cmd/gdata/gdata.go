@@ -7,16 +7,19 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"flag"
+	"fmt"
 	"gdata"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 var (
 	fPort    = flag.String("listen", ":12311", "Address to listen on")
 	fMakeKey = flag.String("make-key", "", "Create a new key to sign JWTs with")
 	fKey     = flag.String("key", "", "Private key to create JWTs with")
+	fLEDir   = flag.String("encdir", "", "directory of TLS resources to use")
 )
 
 func main() {
@@ -65,5 +68,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.ListenAndServe(*fPort, server)
+	if *fLEDir != "" {
+		fmt.Printf("* Listening on TLS %s", *fPort)
+		var (
+			cert = filepath.Join(*fLEDir, "fullchain.pem")
+			key  = filepath.Join(*fLEDir, "privkey.pem")
+		)
+
+		err = http.ListenAndServeTLS(*fPort, cert, key, server)
+
+	} else {
+		fmt.Printf("* Listening on %s", *fPort)
+		err = http.ListenAndServe(*fPort, server)
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
