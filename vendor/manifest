@@ -57,6 +57,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/evanphx/json-patch",
+			"repository": "https://github.com/evanphx/json-patch",
+			"revision": "c56073cf494de2499b953c98c3302f783e4b590b",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/fsouza/go-dockerclient",
 			"repository": "https://github.com/fsouza/go-dockerclient",
 			"revision": "504b650c495df17b7f246b94fe2a2239a85bc73e",

@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/bmizerany/pat"
+	"github.com/evanphx/json-patch"
 	consul "github.com/hashicorp/consul/api"
 	"github.com/satori/go.uuid"
 	"github.com/vektra/jwt-go"
@@ -43,6 +44,9 @@ func NewServer(cfg *Config) (*Server, error) {
 	s.mux.Post("/create", http.HandlerFunc(s.create))
 	s.mux.Post("/token", s.extractOrg(http.HandlerFunc(s.newToken)))
 
+	s.mux.Post("/update/:id", http.HandlerFunc(s.update))
+
+	s.mux.Post("/dir/:type/_scoped", s.extractOrg(http.HandlerFunc(s.updateToken)))
 	s.mux.Post("/dir/:type/:id", s.extractOrg(http.HandlerFunc(s.set)))
 	s.mux.Post("/dir/:type", s.extractOrg(http.HandlerFunc(s.setGenId)))
 
@@ -125,6 +129,32 @@ func (s *Server) newToken(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte(str))
 }
 
+func (s *Server) updateToken(w http.ResponseWriter, req *http.Request) {
+	var (
+		org  = req.URL.Query().Get(":org")
+		typ  = req.URL.Query().Get(":type")
+		path = req.URL.Query().Get("path")
+	)
+
+	if path == "" {
+		http.Error(w, "missing path to restrict update to", 400)
+		return
+	}
+
+	token := jwt.New(jwt.SigningMethodES256)
+	token.Claims["sub"] = org
+	token.Claims["type"] = typ
+	token.Claims["path"] = path
+
+	str, err := token.SignedString(s.cfg.key)
+	if err != nil {
+		http.Error(w, "error signing token", 500)
+		return
+	}
+
+	w.Write([]byte(str))
+}
+
 func (s *Server) setGenId(w http.ResponseWriter, req *http.Request) {
 	id := randomId()
 
@@ -179,6 +209,94 @@ func (s *Server) setId(w http.ResponseWriter, req *http.Request, id string) {
 	}
 }
 
+func (s *Server) update(w http.ResponseWriter, req *http.Request) {
+	token, err := jwt.ParseFromRequest(req,
+		func(*jwt.Token) (interface{}, error) { return &s.cfg.key.PublicKey, nil })
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	var (
+		org  = token.Claims["sub"].(string)
+		typ  = token.Claims["type"].(string)
+		path = token.Claims["path"].(string)
+		id   = req.URL.Query().Get(":id")
+	)
+
+	defer req.Body.Close()
+
+	data, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		http.Error(w, "unable to read data to write", 400)
+		return
+	}
+
+	if len(data) == 0 {
+		http.Error(w, "misformed json: none presented", 400)
+	}
+
+	var buf bytes.Buffer
+
+	err = json.Compact(&buf, data)
+	if err != nil {
+		var buf2 bytes.Buffer
+
+		buf2.WriteByte('"')
+		buf2.Write(data)
+		buf2.WriteByte('"')
+
+		err = json.Compact(&buf, buf2.Bytes())
+		if err != nil {
+			http.Error(w, fmt.Sprintf("misformed json: %s", err), 400)
+			return
+		}
+	}
+
+	patchJson := fmt.Sprintf(`[{"op": "replace", "path": "%s", "value": %s}]`,
+		path, buf.String())
+
+	patch, err := jsonpatch.DecodePatch([]byte(patchJson))
+	if err != nil {
+		http.Error(w, fmt.Sprintf("interval patch creation error: %s"), 500)
+		return
+	}
+
+	for {
+		opts := &consul.QueryOptions{
+			RequireConsistent: true,
+			AllowStale:        false,
+		}
+
+		kv, _, err := s.con.KV().Get(s.key(org, typ, id), opts)
+		if err != nil {
+			http.Error(w, "error writing value", 500)
+			return
+		}
+
+		doc, err := patch.Apply(kv.Value)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("error applying patch: %s", err), 400)
+			return
+		}
+
+		out := &consul.KVPair{
+			Key:         s.key(org, typ, id),
+			Value:       doc,
+			ModifyIndex: kv.ModifyIndex,
+		}
+
+		ok, _, err := s.con.KV().CAS(out, nil)
+		if err != nil {
+			http.Error(w, "error writing value", 500)
+		}
+
+		if ok {
+			return
+		}
+	}
+}
+
 func (s *Server) get(w http.ResponseWriter, req *http.Request) {
 	var (
 		org = req.URL.Query().Get(":org")
@@ -196,6 +314,11 @@ func (s *Server) get(w http.ResponseWriter, req *http.Request) {
 	kv, _, err := s.con.KV().Get(s.key(org, typ, id), opts)
 	if err != nil {
 		http.Error(w, "error writing value", 500)
+		return
+	}
+
+	if kv == nil {
+		http.Error(w, "unknown value", 4040)
 		return
 	}
 
